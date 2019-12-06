@@ -7,7 +7,6 @@ import {
 const helloArr = require('./moduleOne.js');
 
 
-console.log('API Key from Define Plugin:', API_KEY);
 
 class TestClass {
   constructor() {
@@ -16,19 +15,11 @@ class TestClass {
   }
 }
 
-let test = new TestClass();
+const test = new TestClass();
 
 
 // Пример массива
 console.log(helloArr);
-
-
-// Пример работы с глобальными переменными
-if (APP_ENV === 'dev') {
-  //код только при отладке
-  console.log("development hello!");
-}
-
 
 /* пример подключения модуля*/
 let mod = moduleOne(2, 3);

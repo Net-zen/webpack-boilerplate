@@ -2,8 +2,7 @@ const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-
-const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const ENV = process.env.npm_lifecycle_event;
 const isDev = ENV === 'dev';
@@ -26,8 +25,8 @@ function setDMode() {
 }
 
 const config = {
-  target: "web", 
-  entry: './src/js/index.js',
+  target: "web",
+  entry: {index: './src/js/index.js'},
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js'
@@ -89,7 +88,7 @@ const config = {
         ]
       },
       {
-        test: /\.(jpg|png|svg|gif)$/,
+        test: /\.(jpe?g|png|svg|gif)$/,
         use: [
           {
             loader: 'file-loader',
@@ -100,9 +99,26 @@ const config = {
           {
             loader: 'image-webpack-loader',
             options: {
+              bypassOnDebug : true,
               mozjpeg: {
-                processive: true,
-                quality: 98
+                progressive: true,
+                quality: 75
+              },
+              // optipng.enabled: false will disable optipng
+              optipng: {
+                enabled: false,
+              },
+              pngquant: {
+                quality: [0.65, 0.90],
+                speed: 4
+              },
+              gifsicle: {
+                interlaced: false,
+                optimizationLevel: 1
+              },
+              // the webp option will enable WEBP
+              webp: {
+                quality: 75
               }
             }
           }
@@ -128,16 +144,17 @@ const config = {
       template: './src/index.html',
       filename: './index.html'
     }),
-      new webpack.DefinePlugin({
-      API_KEY: JSON.stringify(process.env.API_KEY),
-      APP_ENV: JSON.stringify(process.env.APP_ENV)
-    })
+    new CopyWebpackPlugin([
+      // {from: './src/static', to: './'},
+      // {from: './src/img', to: './img/'},
+    ]),
   ],
 
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
     port: 3000,
+    overlay: true,
     stats: 'errors-only',
     clientLogLevel: 'none'
   }
